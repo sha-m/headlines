@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"  xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/mvc
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<util:properties id="redisConfig" location="classpath:redis.properties"></util:properties>
+	<!-- 配置redis单机版 -->
+	<bean id="jedisClientPool" class="com.example.headlines.manager.common.jedis.JedisClientPool">
+		<property name="jedisPool" ref="jedisPool"></property>
+	</bean>
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="#{redisConfig['redis.maxIdle']}" />
+        <property name="maxTotal" value="#{redisConfig['redis.maxTotal']}" />
+        <property name="maxWaitMillis" value="#{redisConfig['redis.maxWaitMillis']}" />
+        <property name="testOnBorrow" value="#{redisConfig['redis.testOnBorrow']}" />
+	</bean>
+
+	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+		<constructor-arg name="host" value="192.168.233.133" />
+		<constructor-arg name="port" value="6379" />
+		<constructor-arg name="timeout" value="10000" />
+		<constructor-arg name="password" value="123" />
+	</bean>
+	
+ 
+</beans>

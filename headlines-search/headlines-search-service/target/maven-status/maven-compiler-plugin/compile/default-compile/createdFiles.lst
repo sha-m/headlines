@@ -1,0 +1,3 @@
+com\example\headlines\search\service\impl\SearchServiceImpl.class
+com\example\headlines\search\dao\SearchDao.class
+com\example\headlines\search\service\impl\SolrDataServiceImpl.class

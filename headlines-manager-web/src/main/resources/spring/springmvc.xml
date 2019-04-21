@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/mvc
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<context:component-scan base-package="com.example.headlines.manager.controller" />
+	<!-- 视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 注解驱动 -->
+	<mvc:annotation-driven />
+
+	<!-- 自动处理静态资源 -->
+	<mvc:default-servlet-handler />
+
+	
+	<!-- 引用dubbo服务 -->
+	<dubbo:application name="headlines-manager-web" />
+	<dubbo:registry protocol="zookeeper"
+		address="192.168.233.133:2181" />
+	<dubbo:reference interface="com.example.headlines.manager.service.UserService" id="userService" />
+	<dubbo:reference interface="com.example.headlines.search.service.SolrDataService" id="solrDataService" />
+	
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<!-- 配置多个拦截器 顺序执行 -->
+		<mvc:interceptor>
+			<!-- /** 是拦截所有的文件夹及里面的子文件夹 -->
+			<mvc:mapping path="/**" />
+			<!-- 不拦截静态资源和某些页面 -->
+			<mvc:exclude-mapping path="/user/login" />
+			<mvc:exclude-mapping path="/user/register" />
+			<mvc:exclude-mapping path="/user/loginacct" />
+			<mvc:exclude-mapping path="/user/insert" />
+			<mvc:exclude-mapping path="/bootstrap/**" />
+			<mvc:exclude-mapping path="/fonts/**" />
+			<mvc:exclude-mapping path="/img/**" />
+			<mvc:exclude-mapping path="/jquery/**" />
+			<mvc:exclude-mapping path="/pagination/**" />
+			<mvc:exclude-mapping path="/layer/**" />
+			<mvc:exclude-mapping path="/script/**" />
+			<bean class="com.example.headlines.manager.listener.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>
